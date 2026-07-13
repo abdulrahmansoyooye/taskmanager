@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import type { Task, TaskStatus } from "@/types";
+import type { Task, TaskStatus, TaskDetail } from "@/types";
 
 export function useTasks(projectId: string) {
   return useQuery<Task[]>({
@@ -24,7 +24,7 @@ export function useAssignedTasks() {
 }
 
 export function useTask(taskId: string) {
-  return useQuery<Task>({
+  return useQuery<TaskDetail>({
     queryKey: ["task", taskId],
     queryFn: async () => {
       const { data } = await api.get(`/api/tasks/${taskId}`);

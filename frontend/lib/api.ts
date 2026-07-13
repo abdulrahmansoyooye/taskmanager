@@ -15,4 +15,11 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+api.interceptors.response.use((response) => {
+  if (response.data && typeof response.data === 'object' && response.data.success === true && 'data' in response.data) {
+    response.data = response.data.data;
+  }
+  return response;
+});
+
 export default api;

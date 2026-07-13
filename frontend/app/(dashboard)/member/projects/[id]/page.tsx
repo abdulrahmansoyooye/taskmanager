@@ -9,7 +9,6 @@ import PriorityBadge from '@/components/PriorityBadge';
 
 export default function ProjectDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const projectId = params.id as string;
 
   const { data: project, isLoading: projLoading, error: projError } = useProject(projectId);

@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger.ts';
 import { config } from '../config/env.ts';
+import { sendError, sendInternalError } from '../utils/response.ts';
 
 export class AppError extends Error {
   constructor(
@@ -14,11 +15,9 @@ export class AppError extends Error {
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({ error: err.message });
+    return sendError(res, err.statusCode, err.message);
   }
 
   logger.error(err, 'Unhandled error');
-  return res.status(500).json({
-    error: config.nodeEnv === 'production' ? 'Internal server error' : err.message,
-  });
+  return sendInternalError(res, config.nodeEnv === 'production' ? 'Internal server error' : err.message);
 }

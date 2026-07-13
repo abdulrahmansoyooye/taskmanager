@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import { config } from '../config/env.ts';
+import { sendUnauthorized, sendForbidden } from '../utils/response.ts';
 
 export interface TokenPayload {
   id: string;
@@ -14,26 +15,21 @@ export interface AuthRequest extends Request {
 
 export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   const token = req.cookies?.token ?? req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
+  if (!token) return sendUnauthorized(res);
+
   try {
     const payload = jwt.verify(token, config.jwtSecret) as TokenPayload;
-    if (payload.type !== 'access') {
-      return res.status(401).json({ error: 'Invalid token type' });
-    }
+    if (payload.type !== 'access') return sendUnauthorized(res, 'Invalid token type');
     req.user = payload;
     next();
   } catch {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    return sendUnauthorized(res, 'Invalid or expired token');
   }
 }
 
 export function requireRole(...roles: string[]) {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
+    if (!req.user || !roles.includes(req.user.role)) return sendForbidden(res);
     next();
   };
 }

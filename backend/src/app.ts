@@ -14,6 +14,7 @@ import { config } from './config/env.ts';
 import { winstonLogger } from './utils/logger.ts';
 import { prisma } from './utils/prisma.ts';
 import { errorHandler } from './middleware/errorHandler.ts';
+import { sendSuccess } from './utils/response.ts';
 
 const app = express();
 
@@ -42,7 +43,7 @@ app.use(expressWinston.logger({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
-  message: { error: 'Too many requests, please try again later' },
+  message: { success: false, error: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -57,9 +58,9 @@ app.use('/api/users', userRoutes);
 app.get('/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'ok', db: 'connected' });
+    return sendSuccess(res, { status: 'ok', db: 'connected' });
   } catch {
-    res.status(503).json({ status: 'error', db: 'disconnected' });
+    return res.status(503).json({ success: false, error: 'Database disconnected' });
   }
 });
 
