@@ -117,16 +117,10 @@ export default function PMProjectDetailPage() {
   };
 
   const handleAddMember = async () => {
-    if (!addMemberEmail.trim()) return;
+    if (!addMemberId) return;
     try {
-      const { data: users } = await api.get('/api/users');
-      const found = (users as User[]).find((u) => u.email === addMemberEmail.trim());
-      if (!found) {
-        setError('User not found with that email');
-        return;
-      }
-      await addMember.mutateAsync(found.id);
-      setAddMemberEmail('');
+      await addMember.mutateAsync(addMemberId);
+      setAddMemberId('');
       setShowAddMember(false);
     } catch (err: unknown) {
       const message =
@@ -258,16 +252,21 @@ export default function PMProjectDetailPage() {
 
         {showAddMember && (
           <div className="flex gap-2">
-            <input
-              type="email"
-              value={addMemberEmail}
-              onChange={(e) => setAddMemberEmail(e.target.value)}
-              placeholder="Enter member email..."
+            <select
+              value={addMemberId}
+              onChange={(e) => setAddMemberId(e.target.value)}
               className="flex-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400"
-            />
+            >
+              <option value="">Select a team member...</option>
+              {allUsers
+                ?.filter((u) => !members?.some((m) => m.userId === u.id))
+                .map((u) => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                ))}
+            </select>
             <button
               onClick={handleAddMember}
-              disabled={!addMemberEmail.trim() || addMember.isPending}
+              disabled={!addMemberId || addMember.isPending}
               className="rounded-md bg-zinc-900 dark:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50"
             >
               {addMember.isPending ? '...' : 'Add'}
