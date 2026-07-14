@@ -16,8 +16,9 @@ const updateRoleSchema = z.object({
 });
 
 export const userController = {
-  async findAll(_req: AuthRequest, res: Response) {
-    const users = await userService.findAll();
+  async findAll(req: AuthRequest, res: Response) {
+    const role = req.query.role as string | undefined;
+    const users = await userService.findAll(role);
     return sendSuccess(res, users);
   },
 

@@ -3,11 +3,11 @@
 import { useState, FormEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/lib/api';
 import { useSession } from 'next-auth/react';
 import { useProject, useUpdateProject, useUpdateProjectStatus, useDeleteProject } from '@/lib/hooks/useProjects';
 import { useMembers, useAddMember, useRemoveMember } from '@/lib/hooks/useMembers';
 import { useTasks, useCreateTask, useUpdateTaskStatus, useDeleteTask } from '@/lib/hooks/useTasks';
+import { useUsers } from '@/lib/hooks/useUsers';
 import type { User } from '@/types';
 import KanbanBoard from '@/components/KanbanBoard';
 
@@ -44,7 +44,8 @@ export default function PMProjectDetailPage() {
   const [taskAssignee, setTaskAssignee] = useState('');
 
   const [showAddMember, setShowAddMember] = useState(false);
-  const [addMemberEmail, setAddMemberEmail] = useState('');
+  const [addMemberId, setAddMemberId] = useState('');
+  const { data: allUsers } = useUsers('TEAM_MEMBER');
 
   const handleStatusChange = async (taskId: string, status: 'TODO' | 'IN_PROGRESS' | 'DONE') => {
     try {

@@ -10,7 +10,7 @@ const devFormat = combine(
   printf(({ timestamp, level, message, stack, ...meta }) => {
     const extras = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
     const stackTrace = stack ? `\n${stack}` : '';
-    return `${timestamp} [${level}]: ${message}${extras}${stackTrace}`;
+    return `${timestamp} [${level}]: ${message}`;
   }),
 );
 

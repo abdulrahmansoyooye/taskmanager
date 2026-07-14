@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import type { Role } from "@/types"
+import { log } from "console"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
 
@@ -26,13 +27,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error(body.error || "Invalid credentials")
         }
 
-        const data = await res.json()
+        const body = await res.json()
+        const { user, token } = body.data
+
         return {
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role,
-          token: data.token,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          token,
         }
       },
     }),

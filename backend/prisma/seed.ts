@@ -7,6 +7,7 @@ const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+
 async function main() {
   const password = await bcrypt.hash('password123', 10);
   await prisma.user.createMany({

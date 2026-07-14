@@ -5,8 +5,12 @@ import { AppError } from '../middleware/errorHandler.ts';
 const userSelect = { id: true, name: true, email: true, role: true, createdAt: true };
 
 export const userService = {
-  async findAll() {
-    return prisma.user.findMany({ select: userSelect, orderBy: { createdAt: 'desc' } });
+  async findAll(role?: string) {
+    return prisma.user.findMany({
+      where: role ? { role: role as never } : undefined,
+      select: userSelect,
+      orderBy: { createdAt: 'desc' },
+    });
   },
 
   async create(data: { name: string; email: string; password: string; role: string }) {

@@ -34,7 +34,7 @@ export function sendError(res: Response, status: number, error: string, details?
 }
 
 export function sendValidationError(res: Response, issues: unknown) {
-  return send(res, 400, false, undefined, 'Validation failed', issues);
+  return sendError(res, 400, 'Validation failed', issues);
 }
 
 export function sendUnauthorized(res: Response, message = 'Authentication required') {
